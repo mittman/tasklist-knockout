@@ -147,6 +147,25 @@ footer ul {
     width: 230px;
 }
 
+li:before {
+   font-family: FontAwesome;
+   content: "\f096";
+   margin: 0 5px 0 -15px;
+}
+
+li:hover:before {
+   font-family: FontAwesome;
+   content: "\f00c";
+   margin: 0 5px 0 -15px;
+   color: #F00F00;
+}
+
+li:active:before {
+   font-family: FontAwesome;
+   content: "\f14a";
+   margin: 0 5px 0 -15px;
+}
+
 li {
     list-style: none;
 }
