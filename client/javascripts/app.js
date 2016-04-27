@@ -7,6 +7,12 @@ var main = function (toDoObjects) {
 
     socket.on("connect", function() {
         socket.emit("adduser");
+        socket.emit("get");
+    });
+
+    socket.on("usercount", function(data) {
+        console.log("clients", data);
+        $(".users").html("<span>Users connected: " + data + "</span>");
     });
 
     var toDos = toDoObjects.map(function (toDo) {
@@ -81,38 +87,39 @@ var main = function (toDoObjects) {
                 });
 
             } else if ($element.parent().is(":nth-child(4)")) {
-                var $input = $("<input>").addClass("description"),
+                var $description = $("<input>").addClass("description"),
                     $inputLabel = $("<p>").text("Description: "),
                     $tagInput = $("<input>").addClass("tags"),
                     $tagLabel = $("<p>").text("Tags: "),
-                    $button = $("<span>").text("+");
+                    $submit = $("<span>").text("+");
 
                 $button.on("click", function () {
                     var description = $input.val(),
                         tags = $tagInput.val().split(","),
                         newToDo = {"description":description, "tags":tags};
 
-                    $.post("todos", newToDo, function (result) {
-                        console.log(result);
+                    // save to DB
+                    socket.emit("post", newToDo);
+                    console.log("POST!");
 
-                        //toDoObjects.push(newToDo);
-                        toDoObjects = result;
+                    toDoObjects.push(newToDo);
+                    //toDoObjects = result;
 
-                        // update toDos
-                        toDos = toDoObjects.map(function (toDo) {
-                            return toDo.description;
-                        });
-
-                        $input.val("");
-                        $tagInput.val("");
+                    // update toDos
+                    toDos = toDoObjects.map(function (toDo) {
+                        return toDo.description;
                     });
+
+                    // clear input
+                    $description.val("");
+                    $tagInput.val("");
                 });
 
                 $content = $("<div>").append($inputLabel)
-                                     .append($input)
+                                     .append($description)
                                      .append($tagLabel)
                                      .append($tagInput)
-                                     .append($button);
+                                     .append($submit);
             }
 
             $("main .content").append($content);

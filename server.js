@@ -10,7 +10,7 @@ var mongoPort = 27017;
 // Depends
 var express = require("express");
 var bodyParser = require("body-parser");
-var mongoose = require("mongoose")
+var mongoose = require("mongoose");
 var io = require("socket.io");
 
 // Initialize
@@ -52,44 +52,60 @@ function startServer() {
 
 function connectDB() {
     // connect to the amazeriffic data store in mongo
-    mongoose.connect(url, function(err, dbConnection) {
-        console.log("==> Connected to MongoDB Server on port", mongoPort);
-        return true;
+    mongoose.connect(url, function(err) {
+        if(!err) {
+            console.log("==> Connected to MongoDB Server on port", mongoPort);
+            return true;
+        }
     });
 
     return false;
 }
 
-function refreshToDo() {
-    app.get("/todos.json", function (req, res) {
+function refreshToDo(socket) {
+    socket.on("get", function () {
+        console.log("==> GET!");
         ToDo.find({}, function (err, toDos) {
-        res.json(toDos);
+            console.log(toDos);
         });
     });
 }
 
-function modifyToDo() {
-    app.post("/todos", function (req, res) {
-        console.log(req.body);
-        var newToDo = new ToDo({"description":req.body.description, "tags":req.body.tags});
+function modifyToDo(socket) {
+    socket.on("post", function (data) {
+        console.log("==> POST!");
+        console.log(data);
+        var newToDo = new ToDo({"description":data.description, "tags":data.tags});
         newToDo.save(function (err, result) {
-        if (err !== null) {
-            // the element did not get saved!
-            console.log(err);
-            res.send("ERROR");
-        } else {
-            // our client expects *all* of the todo items to be returned, so we'll do
-            // an additional request to maintain compatibility
-            ToDo.find({}, function (err, result) {
             if (err !== null) {
                 // the element did not get saved!
-                res.send("ERROR");
+                console.log(err, result);
+                console.log("ERROR in POST");
+            } else {
+                // our client expects *all* of the todo items to be returned, so we'll do
+                // an additional request to maintain compatibility
+                ToDo.find({}, function (err, result) {
+                    if (err !== null) {
+                        // the element did not get saved!
+                        console.log("ERROR in FIND");
+                    }
+                    // debugging
+                    console.log("Result", result);
+                });
             }
-            res.json(result);
-            });
-        }
         });
     });
+}
+
+function userCount(socket) {
+    var users = server.engine.clientsCount;
+    // debugging
+    //console.log("total:", users);
+
+    // echo to client
+    socket.emit("usercount", users);
+    // echo globally (all clients)
+    socket.broadcast.emit("usercount", users);
 }
 
 // Run server
@@ -101,10 +117,15 @@ database = connectDB();
 server.sockets.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     socket.on("adduser", function() {
-        console.log("new user!");
+        userCount(socket);
+    });
+
+    socket.on("disconnect", function() {
+        console.log("User Disconnected");
+        userCount(socket);
     });
 
     // To-Do actions
-    refreshToDo();
-    modifyToDo();
+    refreshToDo(socket);
+    modifyToDo(socket);
 });
