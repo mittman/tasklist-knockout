@@ -1,8 +1,32 @@
 {
-    "name": "amazeriffic",
-    "description": "The best ToDo list app in the history of the world",
-    "version": "0.0.1",
-    "dependencies": {
-	"mongoose": "3.6.x"
-    }
+  "name": "tasklist",
+  "version": "1.0.0",
+  "description": "Multi-user To-Do list with socket.io and nodeJS",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "mongod --dbpath=$PWD/db --httpinterface --rest --quiet & node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mittman/tasklist.git"
+  },
+  "keywords": [
+    "to-do",
+    "todo",
+    "socket.io"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mittman/tasklist/issues"
+  },
+  "homepage": "https://github.com/mittman/tasklist#readme",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "http": "0.0.0",
+    "mongoose": "^4.4.13",
+    "socket.io": "^1.4.5"
+  }
 }
