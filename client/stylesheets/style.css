@@ -147,20 +147,20 @@ footer ul {
     width: 230px;
 }
 
-li:before {
+li:not(.link):before {
    font-family: FontAwesome;
    content: "\f096";
    margin: 0 5px 0 -15px;
 }
 
-li:hover:before {
+li:not(.link):hover:before {
    font-family: FontAwesome;
    content: "\f00c";
    margin: 0 5px 0 -15px;
    color: #F00F00;
 }
 
-li:active:before {
+li:not(.link):active:before {
    font-family: FontAwesome;
    content: "\f14a";
    margin: 0 5px 0 -15px;

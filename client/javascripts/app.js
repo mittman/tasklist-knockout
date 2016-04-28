@@ -2,12 +2,13 @@ var main = function (toDoObjects) {
     "use strict";
 
     var socket = io.connect();
+    var toDos = {};
 
     console.log("SANITY CHECK");
 
     socket.on("connect", function() {
         socket.emit("adduser");
-        //socket.emit("get");
+        socket.emit("get");
     });
 
     socket.on("usercount", function(data) {
@@ -15,28 +16,27 @@ var main = function (toDoObjects) {
         $(".users").html("<span>Users connected: " + data + "</span>");
     });
 
-/*
     socket.on("todo", function(data) {
-        console.log("I am groot");
-        var toDoObjects;
-        $.each(data, function(item) {
-            console.log("item", item);
-        });
+        toDoObjects = data;
 
-        var toDos = toDoObjects.map(function (toDo) {
+        toDos = toDoObjects.map(function (toDo) {
             // we'll just return the description
             // of this toDoObject
-            return $.parseJSON(data)["description"];
-        });
-    });
-*/
-        var toDos = toDoObjects.map(function (toDo) {
-            // we'll just return the description
-            // of this toDoObject
+            console.log("desc", toDo.description);
             return toDo.description;
         });
 
-    $(".tabs a span").toArray().forEach(function (element) {
+
+        $(".tabs a span").toArray().forEach(function (element) {
+            populate(element);
+        });
+
+        $(".tabs .active").trigger("click");
+    });
+
+
+    //$(".tabs a span").toArray().forEach(function (element) {
+    function populate(element) {
         var $element = $(element);
 
         // create a click handler for this element
@@ -50,18 +50,27 @@ var main = function (toDoObjects) {
             $element.addClass("active");
             $("main .content").empty();
 
+            // tab 1
             if ($element.parent().is(":nth-child(1)")) {
                 $content = $("<ul>");
                 for (i = toDos.length-1; i >= 0; i--) {
                     $content.append($("<li>").text(toDos[i]));
                 }
-            } else if ($element.parent().is(":nth-child(2)")) {
+                $("main .content").append($content);
+            }
+
+            // tab 2
+            else if ($element.parent().is(":nth-child(2)")) {
                 $content = $("<ul>");
                 toDos.forEach(function (todo) {
                     $content.append($("<li>").text(todo));
                 });
 
-            } else if ($element.parent().is(":nth-child(3)")) {
+                $("main .content").append($content);
+            }
+
+            // tab 3
+            else if ($element.parent().is(":nth-child(3)")) {
                 var tags = [];
 
                 toDoObjects.forEach(function (toDo) {
@@ -100,8 +109,10 @@ var main = function (toDoObjects) {
                     $("main .content").append($tagName);
                     $("main .content").append($content);
                 });
+            }
 
-            } else if ($element.parent().is(":nth-child(4)")) {
+            // tab 4
+            else if ($element.parent().is(":nth-child(4)")) {
                 var $description = $("<input>").addClass("description"),
                     $inputLabel = $("<p>").text("Description: "),
                     $tagInput = $("<input>").addClass("tags"),
@@ -116,9 +127,7 @@ var main = function (toDoObjects) {
                     // save to DB
                     socket.emit("post", newToDo);
                     console.log("POST!");
-
                     toDoObjects.push(newToDo);
-                    //toDoObjects = result;
 
                     // update toDos
                     toDos = toDoObjects.map(function (toDo) {
@@ -135,20 +144,22 @@ var main = function (toDoObjects) {
                                      .append($tagLabel)
                                      .append($tagInput)
                                      .append($submit);
-            }
 
-            $("main .content").append($content);
+                $("main .content").append($content);
+            }
 
             return false;
         });
+    };
+
+    $(".tabs a span").toArray().forEach(function (element) {
+        populate(element);
     });
 
     $(".tabs a:first-child span").trigger("click");
 };
 
 $(document).ready(function () {
-    //$.getJSON("todos.json", function (toDoObjects) {
     var toDoObjects = [ {} ];
-        main(toDoObjects);
-    //});
+    main(toDoObjects);
 });

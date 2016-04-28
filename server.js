@@ -67,11 +67,10 @@ function refreshToDo(socket) {
         console.log("==> GET!");
         ToDo.find({}, function(err, result) {
             if (!err) {
-                console.log("todo", result);
                 socket.emit("todo", result);
             }
             else {
-                console.log("damn it rocket", err);
+                console.log(err);
             }
         });
     });
