@@ -1,4 +1,4 @@
-var main = function (toDoObjects) {
+var main = function () {
     "use strict";
 
     var socket = io.connect();
@@ -15,11 +15,20 @@ var main = function (toDoObjects) {
         $(".users").html("<span>Users connected: " + data + "</span>");
     });
 
-    var toDos = toDoObjects.map(function (toDo) {
-          // we'll just return the description
-          // of this toDoObject
-          return toDo.description;
+    socket.on("todos", function(data) {
+        var toDoObjects = data;
+        console.log(toDoObjects);
+
+        var toDos = toDoObjects.map(function (toDo) {
+            // we'll just return the description
+            // of this toDoObject
+            return $.parseJSON(data)["description"];
+        });
+
     });
+
+
+
 
     $(".tabs a span").toArray().forEach(function (element) {
         var $element = $(element);
@@ -132,7 +141,7 @@ var main = function (toDoObjects) {
 };
 
 $(document).ready(function () {
-    $.getJSON("todos.json", function (toDoObjects) {
-        main(toDoObjects);
-    });
+    //$.getJSON("todos.json", function (toDoObjects) {
+        main();
+    //});
 });

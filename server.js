@@ -63,10 +63,13 @@ function connectDB() {
 }
 
 function refreshToDo(socket) {
-    socket.on("get", function () {
+    socket.on("get", function (res) {
         console.log("==> GET!");
-        ToDo.find({}, function (err, toDos) {
-            console.log(toDos);
+        ToDo.find({},{ _id: 0, __v: 0 }, function(err, result) {
+            if (!err) {
+                console.log("todo", result);
+                socket.emit("todo", result);
+            }
         });
     });
 }
