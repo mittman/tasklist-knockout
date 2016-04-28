@@ -3,6 +3,8 @@ var main = function (toDoObjects) {
 
     var socket = io.connect();
     var toDos = {};
+    var read = 0;
+    var onload = true;
 
     console.log("SANITY CHECK");
 
@@ -20,22 +22,36 @@ var main = function (toDoObjects) {
         toDoObjects = data;
 
         toDos = toDoObjects.map(function (toDo) {
-            // we'll just return the description
-            // of this toDoObject
-            console.log("desc", toDo.description);
+            // debugging
+            //console.log("desc", toDo.description);
+
+            if (onload) {
+                //console.log("onload", read);
+                ++read;
+            }
+
+
             return toDo.description;
         });
 
+        console.log("compare", toDos.length + ":" + read);
+        if (toDos.length != read) {
+            var newItems = toDos.length - read;
+            $(".alerts").html("<span>" + newItems + " new alert(s)!<i class='fa fa-bell-o fa-2x'></i></span>");
+        }
+        else {
+            $(".alerts").empty();
+        }
 
         $(".tabs a span").toArray().forEach(function (element) {
             populate(element);
         });
 
         $(".tabs .active").trigger("click");
+
+        onload = false;
     });
 
-
-    //$(".tabs a span").toArray().forEach(function (element) {
     function populate(element) {
         var $element = $(element);
 
@@ -94,8 +110,6 @@ var main = function (toDoObjects) {
                     return { "name": tag, "toDos": toDosWithTag };
                 });
 
-                //console.log(tagObjects);
-
                 tagObjects.forEach(function (tag) {
                     var $tagName = $("<h3>").text(tag.name),
                         $content = $("<ul>");
@@ -128,6 +142,7 @@ var main = function (toDoObjects) {
                     socket.emit("post", newToDo);
                     console.log("POST!");
                     toDoObjects.push(newToDo);
+                    ++read;
 
                     // update toDos
                     toDos = toDoObjects.map(function (toDo) {
