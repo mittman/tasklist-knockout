@@ -68,6 +68,7 @@ function refreshToDo(socket) {
         ToDo.find({}, function(err, result) {
             if (!err) {
                 socket.emit("todo", result);
+                socket.broadcast.emit("todo", result);
             }
             else {
                 console.log(err);
@@ -94,8 +95,8 @@ function modifyToDo(socket) {
                         // the element did not get saved!
                         console.log("ERROR in FIND");
                     }
-                    // debugging
-                    console.log("Result", result);
+                    socket.emit("todo", result);
+                    socket.broadcast.emit("todo", result);
                 });
             }
         });
