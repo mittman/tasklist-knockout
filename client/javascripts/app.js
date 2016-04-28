@@ -1,4 +1,4 @@
-var main = function () {
+var main = function (toDoObjects) {
     "use strict";
 
     var socket = io.connect();
@@ -7,7 +7,7 @@ var main = function () {
 
     socket.on("connect", function() {
         socket.emit("adduser");
-        socket.emit("get");
+        //socket.emit("get");
     });
 
     socket.on("usercount", function(data) {
@@ -15,20 +15,26 @@ var main = function () {
         $(".users").html("<span>Users connected: " + data + "</span>");
     });
 
-    socket.on("todos", function(data) {
-        var toDoObjects = data;
-        console.log(toDoObjects);
+/*
+    socket.on("todo", function(data) {
+        console.log("I am groot");
+        var toDoObjects;
+        $.each(data, function(item) {
+            console.log("item", item);
+        });
 
         var toDos = toDoObjects.map(function (toDo) {
             // we'll just return the description
             // of this toDoObject
             return $.parseJSON(data)["description"];
         });
-
     });
-
-
-
+*/
+        var toDos = toDoObjects.map(function (toDo) {
+            // we'll just return the description
+            // of this toDoObject
+            return toDo.description;
+        });
 
     $(".tabs a span").toArray().forEach(function (element) {
         var $element = $(element);
@@ -79,7 +85,7 @@ var main = function () {
                     return { "name": tag, "toDos": toDosWithTag };
                 });
 
-                console.log(tagObjects);
+                //console.log(tagObjects);
 
                 tagObjects.forEach(function (tag) {
                     var $tagName = $("<h3>").text(tag.name),
@@ -102,8 +108,8 @@ var main = function () {
                     $tagLabel = $("<p>").text("Tags: "),
                     $submit = $("<span>").text("+");
 
-                $button.on("click", function () {
-                    var description = $input.val(),
+                $submit.on("click", function () {
+                    var description = $description.val(),
                         tags = $tagInput.val().split(","),
                         newToDo = {"description":description, "tags":tags};
 
@@ -142,6 +148,7 @@ var main = function () {
 
 $(document).ready(function () {
     //$.getJSON("todos.json", function (toDoObjects) {
-        main();
+    var toDoObjects = [ {} ];
+        main(toDoObjects);
     //});
 });

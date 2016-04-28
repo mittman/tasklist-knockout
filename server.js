@@ -63,12 +63,15 @@ function connectDB() {
 }
 
 function refreshToDo(socket) {
-    socket.on("get", function (res) {
+    socket.on("get", function () {
         console.log("==> GET!");
-        ToDo.find({},{ _id: 0, __v: 0 }, function(err, result) {
+        ToDo.find({}, function(err, result) {
             if (!err) {
                 console.log("todo", result);
                 socket.emit("todo", result);
+            }
+            else {
+                console.log("damn it rocket", err);
             }
         });
     });

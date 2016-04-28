@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "mongod --dbpath=$PWD/db --httpinterface --rest --quiet & node server.js"
+    "start": "mongod --dbpath=$PWD/db --httpinterface --journal --storageEngine=mmapv1 --rest --quiet & node server.js"
   },
   "repository": {
     "type": "git",
