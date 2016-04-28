@@ -165,7 +165,7 @@ var main = function (toDoObjects) {
 
             return false;
         });
-    };
+    }
 
     $(".tabs a span").toArray().forEach(function (element) {
         populate(element);
