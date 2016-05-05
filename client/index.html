@@ -32,14 +32,37 @@
           <a href=""><span>Add</span></a>
         </div>
         <div class="content">
-          <ul>
-            <li>Get Groceries</li>
-            <li>Make up some new ToDos</li>
-            <li>Prep for Monday's class</li>
-            <li>Answer recruiter emails on LinkedIn</li>
-            <li>Take Gracie to the park</li>
-            <li>Finish writing book</li>
-          </ul>
+          <div id="tab1" hidden>
+            <ul data-bind="foreach: toDoObjects, visible: toDoObjects().length > 0">
+              <li>
+                <span data-bind="text: listitem" />
+              </li> 
+            </ul>
+          </div>
+          <div id="tab2" hidden>
+            <ul data-bind="foreach: toDoObjects, visible: toDoObjects().length > 0">
+              <li>
+                <span data-bind="text: listitem" />
+              </li> 
+            </ul>
+          </div>
+          <div id="tab3" hidden>
+            <h3 data-bind="text: tagname"></h3>
+            <ul data-bind="foreach: taglist, visible: taglist().length > 0">
+              <li>
+                <span data-bind="text: tagitem" />
+              </li> 
+            </ul>
+          </div>
+          <div id="tab4">
+            <form data-bind="submit: addTask">
+              <p>Description:</p>
+              <input data-bind="description" class="description">
+              <p>Tags:</p>
+              <input data-bind="tags" class="tags">
+              <span data-bind="click: addTask">+</span>
+            </form>
+          </div>
         </div>
       </div>
     </main>
