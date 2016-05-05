@@ -26,27 +26,27 @@
     <main>
       <div class="container">
         <div class="tabs">
-          <a href=""><span class="active">Newest</span></a>
-          <a href=""><span>Oldest</span></a>
-          <a href=""><span>Tags</span></a>
-          <a href=""><span>Add</span></a>
+          <a href=""><span id="title1" data-bind="click: newest">Newest</span></a>
+          <a href=""><span id="title2" data-bind="click: oldest">Oldest</span></a>
+          <a href=""><span id="title3" data-bind="click: tags">Tags</span></a>
+          <a href=""><span id="title4" data-bind="click: add">Add</span></a>
         </div>
         <div class="content">
-          <div id="tab1" hidden>
+          <div id="tab1">
             <ul data-bind="foreach: toDoObjects, visible: toDoObjects().length > 0">
               <li>
                 <span data-bind="text: listitem" />
               </li> 
             </ul>
           </div>
-          <div id="tab2" hidden>
+          <div id="tab2">
             <ul data-bind="foreach: toDoObjects, visible: toDoObjects().length > 0">
               <li>
                 <span data-bind="text: listitem" />
               </li> 
             </ul>
           </div>
-          <div id="tab3" hidden>
+          <div id="tab3">
             <h3 data-bind="text: tagname"></h3>
             <ul data-bind="foreach: taglist, visible: taglist().length > 0">
               <li>
@@ -57,9 +57,9 @@
           <div id="tab4">
             <form data-bind="submit: addTask">
               <p>Description:</p>
-              <input data-bind="description" class="description">
+              <input data-bind="value: description" class="description">
               <p>Tags:</p>
-              <input data-bind="tags" class="tags">
+              <input data-bind="value: tag" class="tags">
               <span data-bind="click: addTask">+</span>
             </form>
           </div>

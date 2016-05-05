@@ -14,51 +14,20 @@ var main = function () {
 
     console.log("SANITY CHECK");
 
-    $("#tab1").show();
-    $("#tab2").hide();
-    $("#tab3").hide();
-    $("#tab4").hide();
+    function switchtab(active, inactive) {
+        $("#title" + active).addClass("active");
+        $("#tab" + active).show();
 
-    function populate(element) {
-        var $element = $(element);
+        for (var i = 0; i < inactive.length; ++i) {
+            $("#title" + inactive[i]).removeClass("active");
+            $("#tab" + inactive[i]).hide();
+        }
+    }
 
-        // create a click handler for this element
-        $element.on("click", function () {
-            var $content,
-                i;
+    switchtab(1, [2,3,4]);
 
-            $(".tabs a span").removeClass("active");
-            $element.addClass("active");
-            //$("main .content").empty();
 
-            // tab 1
-            if ($element.parent().is(":nth-child(1)")) {
-                $("#tab1").show();
-                $("#tab2").hide();
-                $("#tab3").hide();
-                $("#tab4").hide();
-                /*$content = $("<ul>");
-                for (i = toDos.length-1; i >= 0; i--) {
-                    $content.append($("<li>").text(toDos[i]));
-                }
-                $("main .content").append($content);*/
-            }
-
-            // tab 2
-            else if ($element.parent().is(":nth-child(2)")) {
-                $content = $("<ul>");
-                toDos.forEach(function (todo) {
-                    $content.append($("<li>").text(todo));
-                });
-
-                $("#tab2").show();
-                $("#tab1").hide();
-                $("#tab3").hide();
-                $("#tab4").hide();
-            }
-
-            // tab 3
-            else if ($element.parent().is(":nth-child(3)")) {
+            /*
                 var tags = [];
 
                 toDoObjects.forEach(function (toDo) {
@@ -93,24 +62,9 @@ var main = function () {
                     });
 
                 });
+                */
 
-                $("#tab3").show();
-                $("#tab1").hide();
-                $("#tab2").hide();
-                $("#tab4").hide();
-            }
 
-            // tab 4
-            else if ($element.parent().is(":nth-child(4)")) {
-                $("#tab4").show();
-                $("#tab1").hide();
-                $("#tab2").hide();
-                $("#tab3").hide();
-            }
-
-            return false;
-        });
-    }
 
     socket.on("connect", function() {
         socket.emit("adduser");
@@ -146,41 +100,50 @@ var main = function () {
             $(".alerts").empty();
         }
 
-        $(".tabs a span").toArray().forEach(function (element) {
-            populate(element);
-        });
-
-        $(".tabs .active").trigger("click");
-
         onload = false;
     });
 
-    $(".tabs a span").toArray().forEach(function (element) {
-        populate(element);
-    });
-
-    $(".tabs a:first-child span").trigger("click");
-
     function TaskList(data) {
-       var self = this;
-       self.listitem = ko.observable(data.description);
-       self.tagitem = ko.observable(data.tags);
+        var self = this;
+        console.log("data", data);
+        self.listitem = ko.observable(data.description);
     }
 
     function TaskListViewModel() {
         var self = this;
+
         self.toDoObjects = ko.observableArray([]);
         self.description = ko.observable();
-        self.tags = ko.observable();
+        self.taglist = ko.observableArray([]);
+        self.tag = ko.observable();
+        self.tagname = ko.observable();
+
+        self.newest = function() {
+            switchtab(1, [2,3,4]);
+        };
+
+        self.oldest = function() {
+            switchtab(2, [1,3,4]);
+        };
+
+        self.tags = function() {
+            switchtab(3, [2,1,4]);
+        };
+
+        self.add = function() {
+            switchtab(4, [3,2,1]);
+        };
 
         self.addTask = function() {
+
+            var newToDo = {"description": self.description(), "tags": self.tag()};
 
             // save to DB
             socket.emit("post", newToDo);
             console.log("POST!");
-            self.toDoObjects.push(new TaskList(self.description(), self.tags()));
+            self.toDoObjects.push(new TaskList(newToDo));
             self.description("");
-            self.tags("");
+            self.tag("");
             ++read;
 
             // update toDos
